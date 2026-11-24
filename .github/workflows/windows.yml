@@ -1,0 +1,36 @@
+name: Windows validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Windows PowerShell and compile installer
+        shell: powershell
+        run: |
+          $scriptPath = (Resolve-Path Guard.ps1).Path
+          $tokens = $null
+          $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile($scriptPath, [ref]$tokens, [ref]$errors)
+          if ($errors) { throw ($errors | Out-String) }
+          $version = (Get-Content VERSION -Raw).Trim()
+          $line = '$script:version = [version]''{0}''' -f $version
+          if (!(Select-String -Path Guard.ps1 -Pattern $line -SimpleMatch -Quiet)) {
+            throw 'VERSION and Guard.ps1 disagree.'
+          }
+          Add-Type -AssemblyName System.Windows.Forms.DataVisualization
+          $compiler = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
+          & $compiler /nologo /target:winexe /codepage:65001 /reference:System.Windows.Forms.dll /out:TimeBuddy_Setup.exe /resource:Guard.ps1,Guard.ps1 /resource:Install.bat,Install.bat Installer.cs
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed.' }
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -cne "v$version") {
+            throw 'Release tag and VERSION disagree.'
+          }

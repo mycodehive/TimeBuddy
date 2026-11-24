@@ -1,3 +1,9 @@
 # TimeBuddy
 
-Windows screen-time management utility. See [README.txt](README.txt) for setup and usage.
+Windows 10/11에서 아이와 부모가 컴퓨터 사용 시간을 함께 관리하는 프로그램입니다. 설치와 설정은 [사용 안내](README.txt)를 참고하세요.
+
+## 개발과 릴리스
+
+변경은 별도 브랜치에서 작업하고 `main`을 대상으로 PR을 엽니다.
+
+릴리스할 때 `VERSION`, `Guard.ps1`의 버전, 사용 안내를 맞춘 뒤 PR을 병합합니다. 병합된 커밋에 `v0.1.1` 형식의 태그를 지정하여 GitHub에 정식 릴리스를 게시합니다. 해당 커밋의 `Guard.ps1`을 같은 이름의 릴리스 파일로 올리면 설치된 TimeBuddy가 GitHub Releases API의 SHA-256을 확인해 업데이트를 받을 수 있습니다.
