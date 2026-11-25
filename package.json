@@ -1,0 +1,52 @@
+{
+  "name": "timebuddy",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Your friendly family time companion",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node scripts/icon.js && electron .",
+    "test": "node --test test/*.test.js && node --check src/main.js && node --check src/preload.js && node --check src/renderer.js",
+    "dist": "node scripts/icon.js && electron-builder --win nsis --x64",
+    "dist:arm64": "node scripts/icon.js && electron-builder --win nsis --arm64"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.11"
+  },
+  "devDependencies": {
+    "electron": "45.4.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "click.writeaday.timebuddy",
+    "productName": "TimeBuddy",
+    "artifactName": "TimeBuddy-Setup-${version}-${arch}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "include": "build/installer.nsh"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "mycodehive",
+        "repo": "TimeBuddy"
+      }
+    ]
+  }
+}
