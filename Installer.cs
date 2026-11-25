@@ -8,7 +8,7 @@ class Installer {
   try {
    var dir=Path.Combine(Path.GetTempPath(),"TimeBuddy-"+Guid.NewGuid().ToString("N"));
    Directory.CreateDirectory(dir);
-   foreach(var name in new[]{"Guard.ps1","Install.bat"}){
+   foreach(var name in new[]{"Guard.ps1","Install.bat","Uninstall.ps1"}){
     using(var input=Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
     using(var output=File.Create(Path.Combine(dir,name))) {input.CopyTo(output);}
    }

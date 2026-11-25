@@ -1,4 +1,4 @@
-﻿TimeBuddy v0.1.1
+﻿TimeBuddy v0.1.2
 Windows 10/11, Windows PowerShell 5.1, .NET Framework 4.x
 
 설치 및 업데이트
@@ -28,4 +28,10 @@ Windows 10/11, Windows PowerShell 5.1, .NET Framework 4.x
 
 EXE 제작: Windows에서 Build_EXE.bat 실행 -> TimeBuddy_Setup.exe 생성. 본 패키지는 사전 컴파일된 EXE가 아닙니다. 별도 서명은 없습니다.
 
-주의: 실제 Windows 및 Telegram 통합 실행 테스트 미실시. 일반 사용자 수준의 화면 차단 프로그램으로 작업 관리자, 시스템 보안 화면, 설정 파일 변경 등에 의해 우회될 수 있습니다. 강제 종료나 OS 보안 기능 차단은 하지 않습니다. 자녀 계정은 표준 사용자로 운영하고 Windows Family Safety를 병행하세요. 프로그램 종료는 트레이에서 부모 비밀번호를 입력합니다. 자동 실행 제거는 Windows 시작프로그램 폴더의 TimeBuddy 바로가기를 삭제합니다. 설정과 통계는 %LOCALAPPDATA%\TimeBuddy 에 있습니다.
+주의: 실제 Windows 및 Telegram 통합 실행 테스트 미실시. 일반 사용자 수준의 화면 차단 프로그램으로 작업 관리자, 시스템 보안 화면, 설정 파일 변경 등에 의해 우회될 수 있습니다. 강제 종료나 OS 보안 기능 차단은 하지 않습니다. 자녀 계정은 표준 사용자로 운영하고 Windows Family Safety를 병행하세요. 프로그램 종료는 트레이에서 부모 비밀번호를 입력합니다. 삭제는 아래 안내를 따릅니다. 설정과 통계는 %LOCALAPPDATA%\TimeBuddy 에 있습니다.
+
+
+0.1.2 설치 및 삭제
+기존 앱 종료 후 Install.bat을 다시 실행해야 삭제 메뉴 및 등록이 적용됩니다. 자동 업데이트는 Guard.ps1만 교체합니다.
+잠금화면 확인: 트레이 > 잠금화면 테스트 (10초), 부모 비밀번호 입력. 허용 시간에는 10초 후 닫히며, 제한 시간에는 정상 잠금이 유지됩니다. 오류 기록: %LOCALAPPDATA%\TimeBuddy\timebuddy.log
+삭제: 트레이 > 프로그램 종료 후 Windows 설정 > 앱 > 설치된 앱 > TimeBuddy > 제거 (또는 시작 메뉴 TimeBuddy Uninstall). 부모 비밀번호를 입력하고 예/아니요로 데이터 삭제/보존을 선택하세요. Windows 자체 보안 화면을 차단하지 않습니다.

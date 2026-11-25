@@ -2,7 +2,7 @@
 Add-Type -AssemblyName System.Drawing
 [Windows.Forms.Application]::EnableVisualStyles()
 $ErrorActionPreference='Stop'
-$script:version = [version]'0.1.1'
+$script:version = [version]'0.1.2'
 $script:inTick = $false
 $root=Join-Path $env:LOCALAPPDATA 'TimeBuddy'
 [IO.Directory]::CreateDirectory($root)|Out-Null
@@ -222,7 +222,7 @@ function PollRemote {
   } -ArgumentList (ReadBotToken), $offset
  } catch { LogError 'telegram-poll' }
 }
-$script:until=[datetime]::MinValue;$script:warned='';$script:locks=@();$script:closing=$false;$script:fail=0;$script:retry=[datetime]::MinValue;$script:warning=$null
+$script:until=[datetime]::MinValue;$script:warned='';$script:locks=@();$script:closing=$false;$script:fail=0;$script:retry=[datetime]::MinValue;$script:warning=$null;$script:previewUntil=[datetime]::MinValue
 function AllowedEnd($now){
  if($script:cfg.manualLock){return [datetime]::MinValue}
  $approvedUntil = $script:until
@@ -234,7 +234,7 @@ function AllowedEnd($now){
  return $best
 }
 function HideLocks {$script:closing=$true;foreach($f in $script:locks){$f.Close();$f.Dispose()};$script:locks=@();$script:closing=$false}
-function Unlock($p){if((Get-Date) -lt $script:retry){return};if(Verify $p){$script:fail=0;Extend ([int]$script:cfg.extra)}else{$script:fail++;if($script:fail -ge 5){$script:retry=(Get-Date).AddSeconds(30);$script:fail=0};[Windows.Forms.MessageBox]::Show('비밀번호가 올바르지 않습니다. 반복 실패 시 30초간 대기합니다.','TimeBuddy')|Out-Null}}
+function Unlock($p){if((Get-Date) -lt $script:retry){return};if(Verify $p){$script:fail=0;$script:previewUntil=[datetime]::MinValue;Extend ([int]$script:cfg.extra)}else{$script:fail++;if($script:fail -ge 5){$script:retry=(Get-Date).AddSeconds(30);$script:fail=0};[Windows.Forms.MessageBox]::Show('비밀번호가 올바르지 않습니다. 반복 실패 시 30초간 대기합니다.','TimeBuddy')|Out-Null}}
 function NewBuddyLabel($text, $size, $height, $bold = $false) {
  $label = New-Object Windows.Forms.Label
  $label.Text = $text
@@ -301,7 +301,7 @@ function LockScreens {
  if ($script:locks.Count -eq $screens.Count) {
   $sameLayout = $true
   for ($i = 0; $i -lt $screens.Count; $i++) {
-   if ($script:locks[$i].Bounds -ne $screens[$i].Bounds) { $sameLayout = $false; break }
+   if ($script:locks[$i].IsDisposed -or !$script:locks[$i].Visible -or $script:locks[$i].Bounds -ne $screens[$i].Bounds) { $sameLayout = $false; break }
   }
   if ($sameLayout) { return }
  }
@@ -310,6 +310,8 @@ function LockScreens {
   $form = New-Object Windows.Forms.Form
   $form.FormBorderStyle = 'None'
   $form.StartPosition = 'Manual'
+  $form.AutoScaleMode = 'None'
+  $form.WindowState = 'Normal'
   $form.Bounds = $screen.Bounds
   $form.TopMost = $true
   $form.BackColor = [Drawing.Color]::FromArgb(235, 249, 239)
@@ -357,9 +359,12 @@ function LockScreens {
   })
   $panel.Controls.Add($button)
   $form.AcceptButton = $button
-  $script:locks += $form
-  $form.Show()
-  if ($screen.Primary) { $form.Activate() }
+  try {
+   $form.Show()
+   $form.Bounds = $screen.Bounds
+   $script:locks += $form
+   if ($screen.Primary) { $form.Activate() }
+  } catch { $form.Dispose(); throw }
  }
 }
 function Settings {
@@ -462,6 +467,22 @@ $null=$menu.Items.Add('텔레그램 테스트',$null,{if(Verify (Password '부�
 $null = $menu.Items.Add('업데이트 설정', $null, {
  if (Verify (Password '부모 비밀번호')) { ShowUpdateSettings }
 })
+$null=$menu.Items.Add('잠금화면 테스트 (10초)', $null, {
+ if (Verify (Password '부모 비밀번호')) {
+  $script:previewUntil=(Get-Date).AddSeconds(10)
+  try { LockScreens } catch {
+   $script:previewUntil=[datetime]::MinValue
+   HideLocks
+   LogError ('lock-preview: ' + $_.Exception.GetType().Name + ' line ' + $_.InvocationInfo.ScriptLineNumber)
+   [Windows.Forms.MessageBox]::Show('잠금화면 표시 실패. timebuddy.log를 확인하세요.','TimeBuddy') | Out-Null
+  }
+ }
+})
+$null=$menu.Items.Add('프로그램 삭제 안내', $null, {
+ if (Verify (Password '부모 비밀번호')) {
+  [Windows.Forms.MessageBox]::Show('먼저 프로그램 종료 메뉴에서 종료하고 Windows 설정 > 앱 > 설치된 앱 > TimeBuddy > 제거를 선택하세요.','TimeBuddy') | Out-Null
+ }
+})
 $null=$menu.Items.Add('프로그램 종료',$null,{if(Verify (Password '부모 비밀번호')){HideLocks;$timer.Stop();$tray.Visible=$false;[Windows.Forms.Application]::ExitThread()}});$tray.ContextMenuStrip=$menu
 if($script:first){Settings};Telegram ('컴퓨터 사용 시작: '+$env:COMPUTERNAME+' / '+(Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))
 $timer=New-Object Windows.Forms.Timer;$timer.Interval=1000
@@ -491,7 +512,7 @@ $timer.Add_Tick({
   }
   $end = AllowedEnd $now
   $script:wasAllowed = $end -gt $now
-  if (!$script:wasAllowed) {
+  if (!$script:wasAllowed -or $now -lt $script:previewUntil) {
    $script:warned = ''
    CloseWarning
    LockScreens
@@ -514,7 +535,7 @@ $timer.Add_Tick({
     $warning.Show()
    }
   }
- } catch { LogError 'timer' } finally {
+ } catch { LogError ('timer: ' + $_.Exception.GetType().Name + ' line ' + $_.InvocationInfo.ScriptLineNumber) } finally {
   try {
    if (((Get-Date) - $script:lastSave).TotalSeconds -ge 10) {
     $script:lastSave = Get-Date
@@ -525,6 +546,7 @@ $timer.Add_Tick({
   } finally { $script:inTick = $false }
  }
 })
+try { if ((AllowedEnd (Get-Date)) -le (Get-Date)) { LockScreens } } catch { LogError ('initial-lock: ' + $_.Exception.GetType().Name + ' line ' + $_.InvocationInfo.ScriptLineNumber) }
 $timer.Start()
 try { [Windows.Forms.Application]::Run() } finally {
  try { SaveUsage } catch { LogError 'usage-write' }
