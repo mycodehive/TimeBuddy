@@ -1,4 +1,4 @@
-# TimeBuddy 0.2.0
+# TimeBuddy 0.2.1
 
 즐거운 컴퓨터 생활, 건강한 시간 습관. / Happy computer time, healthy everyday habits.
 
@@ -15,7 +15,7 @@ npm test
 npm run dist
 ~~~
 
-설치 파일: dist/TimeBuddy-Setup-0.2.0-x64.exe. 설치된 PC에는 Node.js를 별도로 설치할 필요가 없습니다. ARM64는 npm run dist:arm64.
+설치 파일: dist/TimeBuddy-Setup-0.2.1-x64.exe. 설치된 PC에는 Node.js를 별도로 설치할 필요가 없습니다. ARM64는 npm run dist:arm64.
 
 ## 주요 기능
 
@@ -39,6 +39,6 @@ Windows 설정 > 앱 > 설치된 앱 > TimeBuddy > 제거. 먼저 부모 설정 
 
 ## 릴리스
 
-GitHub Actions의 Windows 빌드 워크플로에서 테스트 및 NSIS 빌드를 실행합니다. v0.2.0 형식의 태그로 릴리스하려면 테스트를 확인한 뒤 태그를 생성하고 워크플로 결과를 확인하세요. 업데이트는 GitHub Releases의 설치 파일과 latest.yml을 사용하며 부모가 다운로드 및 재시작을 승인합니다. 서명 인증서가 없으면 Windows SmartScreen 경고가 발생할 수 있습니다.
+GitHub Actions의 Windows 빌드 워크플로에서 테스트 및 NSIS 빌드를 실행합니다. v0.2.1 형식의 태그로 릴리스하려면 테스트를 확인한 뒤 태그를 생성하고 워크플로 결과를 확인하세요. 업데이트는 GitHub Releases의 설치 파일과 latest.yml을 사용하며 부모가 다운로드 및 재시작을 승인합니다. 서명 인증서가 없으면 Windows SmartScreen 경고가 발생할 수 있습니다.
 
 이 변경은 소스 단계이며 실제 Windows 다중 모니터, 설치/삭제, Telegram 및 업데이트의 통합 검증이 필요합니다.
