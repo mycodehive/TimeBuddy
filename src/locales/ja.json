@@ -79,5 +79,9 @@
   "update_available": "更新あり",
   "update_current": "最新版",
   "update_ready": "インストール準備完了",
-  "update_error": "確認失敗"
+  "update_error": "確認失敗",
+  "editTime": "時間帯の設定",
+  "slotHint": "終了時刻が開始時刻より早い場合は翌日まで適用されます。変更後は保護者設定で保存してください。",
+  "sameTime": "開始時刻と終了時刻を別々に入力してください。",
+  "applyTime": "適用"
 }

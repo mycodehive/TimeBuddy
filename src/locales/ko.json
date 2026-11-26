@@ -79,5 +79,9 @@
   "update_available": "새 버전 있음",
   "update_current": "최신 버전",
   "update_ready": "설치 준비 완료",
-  "update_error": "확인 실패"
+  "update_error": "확인 실패",
+  "editTime": "시간대 설정",
+  "slotHint": "종료 시간이 시작 시간보다 빠르면 다음 날까지 적용돼요. 변경 후 부모 설정에서 저장해 주세요.",
+  "sameTime": "시작 시간과 종료 시간을 다르게 입력해 주세요.",
+  "applyTime": "적용"
 }

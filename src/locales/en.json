@@ -79,5 +79,9 @@
   "update_available": "Update available",
   "update_current": "Up to date",
   "update_ready": "Ready to install",
-  "update_error": "Check failed"
+  "update_error": "Check failed",
+  "editTime": "Edit time period",
+  "slotHint": "An end time earlier than the start continues into the next day. Save changes in parent settings.",
+  "sameTime": "Start and end times must be different.",
+  "applyTime": "Apply"
 }
